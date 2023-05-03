@@ -1,13 +1,3 @@
-// async function getRawStory() {
-//   const response = await fetch('story.txt');
-//   if (!response.ok) {
-//     const message = `An error has occurred: ${response.status}`;
-//     throw new Error(message);
-//   }
-//   const story = await response.text();
-//   return story;
-// }
-
 function parseStory(rawStory) {
 	const parsedStory = [];
 	const regex = /(\w+\[[a-z]\])\s*|([\w.,;!?]+\s*)/gi;
@@ -39,9 +29,10 @@ function createMadLibs(parsedStory) {
 
 		if (pos) {
 			inputIds.push(inputId);
-			const inputElement = `<input type="text" id="${inputId}" class="empty" maxlength="20">`;
+			const placeholder = ` ${pos}`; // create a placeholder string based on the part of speech
+			const inputElement = `<input type="text" id="${inputId}" class="empty" maxlength="20" placeholder="${placeholder}">`; // add the placeholder attribute to the input element
 			editViewStory += inputElement;
-			previewStory += `<span id="preview_${index}" class="preview"></span>`; // add class to preview span
+			previewStory += `<span id="preview_${index}" class="preview"></span>`;
 		} else {
 			editViewStory += word;
 			previewStory += word;
@@ -51,18 +42,18 @@ function createMadLibs(parsedStory) {
 	document.querySelector('.madLibsEdit').innerHTML = editViewStory;
 	document.querySelector('.madLibsPreview').innerHTML = previewStory;
 
-	inputIds.forEach((id, index) => {
+	inputIds.forEach((id) => {
+		const inputIndex = id.split('_')[1];
 		const inputElement = document.getElementById(id);
-		const previewElement = document.getElementById(`preview_${index}`); // get preview span element
+		const previewElement = document.getElementById(`preview_${inputIndex}`);
+
 		if (previewElement) {
 			// add check to make sure preview span exists
 			inputElement.addEventListener('input', function (event) {
 				const value = event.target.value;
-				if (inputElement.classList.contains('filled')) {
-					// check if input is filled
-					previewElement.textContent = value;
-				}
 				inputElement.className = value ? 'filled' : 'empty';
+
+				previewElement.textContent = value;
 			});
 
 			inputElement.addEventListener('focus', function () {
